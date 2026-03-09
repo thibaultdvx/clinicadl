@@ -20,7 +20,7 @@ from clinicadl.data.dataloader import (
     DataLoaderConfig,
     MergeBatchesCollate,
 )
-from clinicadl.data.datasets import CapsDataset, UnpairedDataset
+from clinicadl.data.datasets import BidsLikeDataset, UnpairedDataset
 from clinicadl.data.datatypes import PETLinear, T1Linear
 from clinicadl.io import Maps
 from clinicadl.transforms import TransformsHandler
@@ -42,7 +42,7 @@ class Split(Mock):
 MAPS_PATH = Path(__file__).parents[2] / "resources" / "maps_example"
 CAPS_PATH = Path(__file__).parents[2] / "resources" / "caps_example"
 MAPS = Maps(MAPS_PATH)
-CAPS = CapsDataset(
+CAPS = BidsLikeDataset(
     directory=CAPS_PATH,
     datatype=PETLinear(
         tracer="18FAV45", suvr_reference_region="pons2", use_uncropped_image=True
@@ -289,7 +289,7 @@ class TestDataLeakage:
 
 class TestDataConsistency:
     checker = ChecksCallback()
-    BAD_DATASET = CapsDataset(
+    BAD_DATASET = BidsLikeDataset(
         directory=CAPS_PATH,
         datatype=PETLinear(
             tracer="18FAV45", suvr_reference_region="pons2", use_uncropped_image=True
@@ -691,7 +691,7 @@ class TestDataConsistency:
 
 
 class TestCompareDatasets:
-    DATASET = CapsDataset(
+    DATASET = BidsLikeDataset(
         directory=CAPS_PATH,
         datatype=T1Linear(use_uncropped_image=True),
         data=pd.DataFrame(
@@ -706,7 +706,7 @@ class TestCompareDatasets:
     )
 
     def test_type(self):
-        class CustomCaps(CapsDataset):
+        class CustomCaps(BidsLikeDataset):
             pass
 
         dataset = CustomCaps(
@@ -716,13 +716,13 @@ class TestCompareDatasets:
             columns=self.DATASET.config.columns,
         )
         assert re.match(
-            "the two datasets are not the same type. Got .*CustomCaps'> and .*CapsDataset'>",
+            "the two datasets are not the same type. Got .*CustomCaps'> and .*BidsLikeDataset'>",
             _compare_datasets(dataset, self.DATASET, except_fields=[]),
         )
 
     def test_directory(self, tmp_path):
         shutil.copytree(CAPS_PATH, tmp_path, dirs_exist_ok=True)
-        dataset = CapsDataset(
+        dataset = BidsLikeDataset(
             tmp_path,
             datatype=self.DATASET.config.datatype,
             data=self.DATASET.config.data,

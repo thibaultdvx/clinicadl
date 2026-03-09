@@ -97,7 +97,7 @@ class TensorDataset(BaseDataset):
         """
         Converts raw files to tensors (in PyTorch's ``.pt`` format).
 
-        This is a **mandatory step** before using a ``CapsDataset``, as some checks on data will
+        This is a **mandatory step** before using a ``BidsLikeDataset``, as some checks on data will
         be performed before conversion (shape consistency, voxel spacing consistency, etc.),
         and some important attributes of the dataset will be computed (e.g. its length, which
         depends on the number of samples per image).
@@ -218,7 +218,7 @@ class TensorDataset(BaseDataset):
 
             from clinicadl.data import datasets, datatypes
 
-            dataset = datasets.CapsDataset(
+            dataset = datasets.BidsLikeDataset(
                 caps_directory="mycaps",
                 datatype=datatypes.PETLinear(
                     tracer="18FAV45", use_uncropped_image=True, suvr_reference_region="pons2"
@@ -387,7 +387,7 @@ class TensorDataset(BaseDataset):
 
             from clinicadl.data import datasets, datatypes
 
-            dataset = datasets.CapsDataset(
+            dataset = datasets.BidsLikeDataset(
                 caps_directory="mycaps",
                 datatype=datatypes.PETLinear(
                     tracer="18FAV45", use_uncropped_image=True, suvr_reference_region="pons2"

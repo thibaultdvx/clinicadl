@@ -44,3 +44,6 @@ clinicadl/notebooks/
 # Mask and other files
 clinicadl/clinicadl/resources/masks/*.nii
 clinicadl/clinicadl/resources/masks/*.nii.gz
+bids
+bids_demo
+maps_demo

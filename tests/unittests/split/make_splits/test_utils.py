@@ -5,7 +5,7 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from clinicadl.data.datasets import CapsDataset, UnpairedDataset
+from clinicadl.data.datasets import BidsLikeDataset, UnpairedDataset
 from clinicadl.data.datatypes import PETLinear, T1Linear
 from clinicadl.split.make_splits.utils import (
     extract_baseline,
@@ -30,7 +30,7 @@ def sub_data(
     return data.reset_index()
 
 
-caps_t1 = CapsDataset(
+caps_t1 = BidsLikeDataset(
     CAPS_DIR,
     datatype=T1Linear(use_uncropped_image=True),
     label="age",
@@ -38,7 +38,7 @@ caps_t1 = CapsDataset(
     data=sub_data([("sub-000", "ses-M000"), ("sub-010", "ses-M003")]),
     transforms=TransformsHandler(extraction=Slice(slices=[0, 1])),
 )
-caps_pet = CapsDataset(
+caps_pet = BidsLikeDataset(
     CAPS_DIR,
     datatype=PETLinear(
         use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"

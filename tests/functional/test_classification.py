@@ -1,6 +1,6 @@
 """
 A multi-class, multi-label classification task trained on 2 splits (KFold splitting) with:
-- a CapsDataset with data augmentation and custom transforms
+- a BidsLikeDataset with data augmentation and custom transforms
   involving individual and common masks;
 - a DataLoader with weighted sampling;
 - a SupervisedModel;
@@ -33,7 +33,7 @@ from clinicadl.callbacks import (
     ModelCheckpointCallback,
 )
 from clinicadl.data.dataloader import DataLoaderConfig
-from clinicadl.data.datasets import CapsDataset
+from clinicadl.data.datasets import BidsLikeDataset
 from clinicadl.data.datatypes import T1Linear
 from clinicadl.losses.config import BCEWithLogitsLossConfig
 from clinicadl.metrics.config import ConfusionMatrixMetricConfig, LossMetricConfig
@@ -71,7 +71,7 @@ def _setup(
     caps_dir: Path, metadata: Path, maps_path: Path, reset_model: bool, gpu: bool
 ) -> None:
     # dataset
-    dataset = CapsDataset(
+    dataset = BidsLikeDataset(
         directory=caps_dir,
         datatype=T1Linear(use_uncropped_image=False),
         data=metadata,

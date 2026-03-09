@@ -140,11 +140,11 @@ class ConcatDataset(CollectionDataset, MultiSamplesDataset):
 
     .. code-block:: python
 
-        from clinicadl.data.datasets import CapsDataset, ConcatDataset
+        from clinicadl.data.datasets import BidsLikeDataset, ConcatDataset
         from clinicadl.data.datatypes import T1Linear
 
-        caps_1 = CapsDataset("caps_1", datatype=T1Linear(use_uncropped_image=True))
-        caps_2 = CapsDataset("caps_2", datatype=T1Linear(use_uncropped_image=True))
+        caps_1 = BidsLikeDataset("caps_1", datatype=T1Linear(use_uncropped_image=True))
+        caps_2 = BidsLikeDataset("caps_2", datatype=T1Linear(use_uncropped_image=True))
 
         caps_1.read_tensor_conversion()
         caps_2.read_tensor_conversion()

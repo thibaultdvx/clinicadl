@@ -17,7 +17,7 @@ from clinicadl.data.dataloader import (
 from clinicadl.data.dataloader.batch import Batch
 from clinicadl.data.dataloader.config import get_dataloader_from_json_safely
 from clinicadl.data.datasets import (
-    CapsDataset,
+    BidsLikeDataset,
     ConcatDataset,
     PairedDataset,
     UnpairedDataset,
@@ -56,7 +56,7 @@ CAPS_DIR = Path(__file__).parents[2] / "resources" / "caps_example"
 DATA = pd.read_csv(CAPS_DIR / "tsv" / "labels.tsv", sep="\t").drop(7)
 DATA["age"] = [0.0, 0.0, 1.0, 1.0, 5.0, 5.0, 10.0]
 
-CAPS = CapsDataset(
+CAPS = BidsLikeDataset(
     CAPS_DIR,
     datatype=PETLinear(
         use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"
@@ -65,7 +65,7 @@ CAPS = CapsDataset(
     columns=["age"],
     data=DATA,
 )
-CAPS_WITHOUT_LABEL = CapsDataset(
+CAPS_WITHOUT_LABEL = BidsLikeDataset(
     CAPS_DIR,
     datatype=PETLinear(
         use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"
@@ -212,7 +212,7 @@ def test_workers():
 
 
 def test_train_eval():
-    caps = CapsDataset(
+    caps = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"
@@ -231,7 +231,7 @@ def test_train_eval():
 
 
 def test_ddp():
-    caps = CapsDataset(
+    caps = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"
@@ -372,7 +372,7 @@ def test_ddp():
         ]
         .reset_index()
     )
-    caps = CapsDataset(
+    caps = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         label="seg",

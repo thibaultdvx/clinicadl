@@ -13,7 +13,7 @@ def remove_tensors(json_path: PathType) -> None:
     """
     To delete tensors in a dataset.
 
-    Will remove all the tensors, saved with :py:class:`clinicadl.data.datasets.CapsDataset.to_tensors` for example,
+    Will remove all the tensors, saved with :py:class:`clinicadl.data.datasets.BidsLikeDataset.to_tensors` for example,
     associated to ``conversion_name``, as well as the associated ``JSON`` file in ``<your-dataset>/tensor_conversion``.
 
     Parameters
@@ -29,7 +29,7 @@ def remove_tensors(json_path: PathType) -> None:
         from clinicadl.data import datasets, datatypes
         from clinicadl.data.utils import remove_tensors
 
-        caps_dataset = datasets.CapsDataset(
+        caps_dataset = datasets.BidsLikeDataset(
             caps_directory="my_caps", preprocessing=datatypes.T1Linear(use_uncropped_image=True)
         )
         caps_dataset.to_tensors()  # the json file will be "my_caps/tensor_conversion/default_t1-linear.json"
@@ -38,7 +38,7 @@ def remove_tensors(json_path: PathType) -> None:
 
     See Also
     --------
-    :py:class:`clinicadl.data.datasets.CapsDataset.to_tensors`
+    :py:class:`clinicadl.data.datasets.BidsLikeDataset.to_tensors`
     """
     base_dir = json_path.parents[1]
 

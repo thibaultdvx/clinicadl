@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from clinicadl.data.datasets import (
-    CapsDataset,
+    BidsLikeDataset,
     ConcatDataset,
     PairedDataset,
     UnpairedDataset,
@@ -19,7 +19,7 @@ DATA = pd.read_csv(CAPS_DIR / "tsv" / "labels.tsv", sep="\t")
 
 SPLIT_DIR = CAPS_DIR / "splits" / "split" / "2_fold"
 
-CAPS = CapsDataset(
+CAPS = BidsLikeDataset(
     CAPS_DIR,
     datatype=PETLinear(
         tracer="18FAV45",
@@ -28,7 +28,7 @@ CAPS = CapsDataset(
     ),
     data=DATA,
 )
-CAPS_T1 = CapsDataset(
+CAPS_T1 = BidsLikeDataset(
     CAPS_DIR,
     datatype=T1Linear(use_uncropped_image=True),
     data=pd.DataFrame.from_dict(
@@ -38,7 +38,7 @@ CAPS_T1 = CapsDataset(
         }
     ),
 )
-CAPS_PET = CapsDataset(
+CAPS_PET = BidsLikeDataset(
     CAPS_DIR,
     datatype=PETLinear(
         use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"

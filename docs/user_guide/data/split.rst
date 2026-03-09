@@ -2,7 +2,7 @@ Split data into training, validation and test sets
 ==================================================
 
 
-To split a :py:class:`~clinicadl.data.datasets.CapsDataset` (or its derivatives:
+To split a :py:class:`~clinicadl.data.datasets.BidsLikeDataset` (or its derivatives:
 :py:class:`~clinicadl.data.datasets.ConcatDataset`, :py:class:`~clinicadl.data.datasets.PairedDataset`, and
 :py:class:`~clinicadl.data.datasets.UnpairedDataset`), you will first find a split from a
 :py:class:`~pandas.DataFrame` containing a list of (participant, session) pairs,
@@ -51,9 +51,9 @@ data format accepted by ClinicaDL's ``Trainer``.
 .. code:: python
 
     from clinicadl.split import KFold, SingleSplit
-    from clinicadl.data.datasets import CapsDataset
+    from clinicadl.data.datasets import BidsLikeDataset
 
-    dataset = CapsDataset("mycaps", data="mycaps/participants_sessions.tsv")
+    dataset = BidsLikeDataset("mycaps", data="mycaps/participants_sessions.tsv")
 
     splitter = SingleSplit(split_dir)     # read the split
     split = splitter.get_split(dataset)   # split any dataset according to the split in 'split_dir'
@@ -65,8 +65,8 @@ data format accepted by ClinicaDL's ``Trainer``.
     splitter = KFold(kfold_dir)
 
     for split in splitter.get_splits(dataset):      # here we can iterate over the splits of the K-Fold
-        train_set = split.train_dataset             # a CapsDataset
-        val_set = split.val_dataset                 # another CapsDataset
+        train_set = split.train_dataset             # a BidsLikeDataset
+        val_set = split.val_dataset                 # another BidsLikeDataset
         ...
 
 .. note::
@@ -76,14 +76,14 @@ data format accepted by ClinicaDL's ``Trainer``.
 
     .. code::
 
-        train_set = CapsDataset("mycaps", data=split_dir / "train.tsv")
-        test_set = CapsDataset("mycaps", data=split_dir / "test_baseline.tsv")
+        train_set = BidsLikeDataset("mycaps", data=split_dir / "train.tsv")
+        test_set = BidsLikeDataset("mycaps", data=split_dir / "test_baseline.tsv")
 
-    Or use :py:meth:`CapsDataset.subset() <clinicadl.data.datasets.CapsDataset.subset>`:
+    Or use :py:meth:`BidsLikeDataset.subset() <clinicadl.data.datasets.BidsLikeDataset.subset>`:
 
     .. code ::
 
-        dataset = CapsDataset("mycaps", data="mycaps/participants_sessions.tsv")
+        dataset = BidsLikeDataset("mycaps", data="mycaps/participants_sessions.tsv")
         train_set = dataset.subset(split_dir / "train.tsv")
         test_set = dataset.subset(split_dir / "test_baseline.tsv")
 

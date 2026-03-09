@@ -17,7 +17,7 @@ from clinicadl.callbacks import (
     LRSchedulerCallback,
     TrainingCheckpointCallback,
 )
-from clinicadl.data.datasets import CapsDataset, PairedDataset
+from clinicadl.data.datasets import BidsLikeDataset, PairedDataset
 from clinicadl.data.datatypes import T1Linear
 from clinicadl.infer import SimpleInferer
 from clinicadl.io import Maps
@@ -187,7 +187,7 @@ def _setup(
 ) -> tuple[Dataset, Trainer, Model, MetricsHandler, list[Callback]]:
     data = pd.read_csv(metadata, sep="\t")
     data["sex"] = _encode_sex(data["sex"])
-    dataset = CapsDataset(
+    dataset = BidsLikeDataset(
         directory=caps_dir,
         datatype=T1Linear(use_uncropped_image=False),
         data=data,

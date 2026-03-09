@@ -18,7 +18,7 @@ from .utils import subset_df
 CAPS_DIR = Path(__file__).parents[2] / "resources" / "caps_example"
 DATAFRAME = pd.read_csv(CAPS_DIR / "tsv" / "labels.tsv", sep="\t")
 
-CAPS_DATASET = CapsDataset(
+CAPS_DATASET = BidsLikeDataset(
     CAPS_DIR,
     datatype=T1Linear(use_uncropped_image=True),
     data=subset_df(DATAFRAME, [("sub-010", "ses-M003"), ("sub-000", "ses-M000")]),
@@ -33,7 +33,7 @@ def sub_data(participants_sessions: list[tuple[str, str]]) -> pd.DataFrame:
 
 
 MANDATORY_ARGS = {
-    "CapsDataset": {
+    "BidsLikeDataset": {
         "directory": CAPS_DIR,
         "data": sub_data(
             [
@@ -52,7 +52,7 @@ MANDATORY_ARGS = {
 @pytest.mark.parametrize(
     "dataset",
     [
-        CapsDataset,
+        BidsLikeDataset,
         ConcatDataset,
         PairedDataset,
         UnpairedDataset,
@@ -64,14 +64,14 @@ def test_dataset_from_dict(dataset):
     d = get_dataset_from_dict(dict_)
     assert isinstance(d, dataset)
 
-    if dataset is CapsDataset:
+    if dataset is BidsLikeDataset:
         assert d.config.datatype.key == "t1-linear"
 
 
 @pytest.mark.parametrize(
     "dataset",
     [
-        CapsDataset,
+        BidsLikeDataset,
         ConcatDataset,
         PairedDataset,
         UnpairedDataset,
@@ -83,13 +83,13 @@ def test_dataset_from_json(tmp_path, dataset):
     d = get_dataset_from_json(tmp_path / "dataset.json")
     assert isinstance(d, dataset)
 
-    if dataset is CapsDataset:
+    if dataset is BidsLikeDataset:
         assert d.config.datatype.key == "t1-linear"
 
 
 def test_dataset_from_json_safely(tmp_path):
-    dataset = CapsDataset(
-        **MANDATORY_ARGS["CapsDataset"],
+    dataset = BidsLikeDataset(
+        **MANDATORY_ARGS["BidsLikeDataset"],
         transforms=TransformsHandler(image_transforms=[tio.ZNormalization()]),
         columns={"abc": lambda x: str(x)},
     )
@@ -99,7 +99,7 @@ def test_dataset_from_json_safely(tmp_path):
     obj, fields = get_dataset_from_json_safely(
         tmp_path / "dataset.json", default=dataset
     )
-    assert isinstance(obj, CapsDataset)
+    assert isinstance(obj, BidsLikeDataset)
     assert isinstance(obj.transforms.image_transforms.transforms[0], tio.ZNormalization)
     assert obj.config.columns["abc"](0) == "0"
     assert fields == ["transforms", "columns"]

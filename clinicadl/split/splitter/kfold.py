@@ -97,7 +97,7 @@ class KFold(Splitter):
         Parameters
         ----------
         dataset : Dataset
-            The :py:class:`~clinicadl.data.datasets.CapsDataset` to split.
+            The :py:class:`~clinicadl.data.datasets.BidsLikeDataset` to split.
         eval_dataset : Optional[Dataset], default=None
             If not ``None``, it will be understood as the dataset from which the validation dataset should be created, and
             ``dataset`` will be the dataset from which the training dataset will be created (see examples). If ``None``, both
@@ -135,7 +135,7 @@ class KFold(Splitter):
             from clinicadl.data import datasets, datatypes
             from clinicadl.transforms import TransformsHandler, extraction
 
-            dataset = datasets.CapsDataset(
+            dataset = datasets.BidsLikeDataset(
                 "caps_dir",
                 data=df,
                 datatype=datatypes.PETLinear(
@@ -166,7 +166,7 @@ class KFold(Splitter):
 
         .. code-block::
 
-            eval_dataset = datasets.CapsDataset(
+            eval_dataset = datasets.BidsLikeDataset(
                 "caps_dir",
                 data=df,
                 datatype=datatypes.PETLinear(

@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from clinicadl.callbacks import MonitorCallback, TrainingCheckpointCallback
-from clinicadl.data.datasets import CapsDataset
+from clinicadl.data.datasets import BidsLikeDataset
 from clinicadl.data.datatypes import T1Linear
 from clinicadl.infer import PatchesToImageInferer
 from clinicadl.losses.config import MSELossConfig
@@ -41,8 +41,8 @@ if TYPE_CHECKING:
 
 def _setup(
     caps_dir: Path, metadata: Path, maps_path: Path
-) -> tuple[CapsDataset, CapsDataset, Trainer]:
-    train_dataset = CapsDataset(
+) -> tuple[BidsLikeDataset, BidsLikeDataset, Trainer]:
+    train_dataset = BidsLikeDataset(
         directory=caps_dir,
         datatype=T1Linear(use_uncropped_image=False),
         data=metadata,
@@ -53,7 +53,7 @@ def _setup(
     )
     train_dataset.read_tensor_conversion()
 
-    eval_dataset = CapsDataset(
+    eval_dataset = BidsLikeDataset(
         directory=caps_dir,
         datatype=T1Linear(use_uncropped_image=False),
         data=metadata,

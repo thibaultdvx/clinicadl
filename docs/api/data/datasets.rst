@@ -12,7 +12,7 @@
     :nosignatures:
     :template: autosummary/class.rst
 
-    CapsDataset
+    BidsLikeDataset
     ConcatDataset
     PairedDataset
     UnpairedDataset

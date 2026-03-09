@@ -19,25 +19,25 @@ from ..readers.caps_reader import CapsReader
 from .tensor import TensorDataset, TensorDatasetConfig
 
 
-class CapsDatasetConfig(TensorDatasetConfig):
-    """Config class of ``CapsDataset``."""
+class BidsLikeDatasetConfig(TensorDatasetConfig):
+    """Config class of ``BidsLikeDataset``."""
 
     @classmethod
-    def _get_class(cls) -> type[CapsDataset]:
+    def _get_class(cls) -> type[BidsLikeDataset]:
         """Returns the class associated to this config class."""
-        return CapsDataset
+        return BidsLikeDataset
 
 
-class CapsDataset(TensorDataset):
+class BidsLikeDataset(TensorDataset):
     """
-    ``CapsDataset`` is a custom :py:class:`PyTorch Dataset <torch.utils.data.Dataset>` class for working with
+    ``BidsLikeDataset`` is a custom :py:class:`PyTorch Dataset <torch.utils.data.Dataset>` class for working with
     neuroimaging data in :term:`CAPS` format.
 
     The user specifies the type of data to work on via ``preprocessing``, the (participant, session)
     pairs to work on via ``data``, and the labels (scalars or segmentation masks) associated to the images
     via ``label``.
 
-    ``CapsDataset`` loads the image and the potential label, and put them in a :py:class:`~clinicadl.data.structures.DataPoint`.
+    ``BidsLikeDataset`` loads the image and the potential label, and put them in a :py:class:`~clinicadl.data.structures.DataPoint`.
     The user can add additional data in this ``DataPoint`` via the arguments ``columns``, to add the values
     of columns of the DataFrame ``data``, and ``masks``, to add masks associated to the image.
 
@@ -48,20 +48,20 @@ class CapsDataset(TensorDataset):
         a transform (e.g. a mask for normalization), you can add them to the ``DataPoint`` via the arguments
         ``columns`` or ``masks``.
 
-    With ``CapsDataset``, it is possible to work on the whole images, or on patches or slices extracted from the
+    With ``BidsLikeDataset``, it is possible to work on the whole images, or on patches or slices extracted from the
     images. This is also specified via the ``transforms`` argument (e.g. ``transforms=TransformsHandler(extraction=Slice())``).
 
     .. note::
         - Depending on the type of data you are working on (images, patches, or slices), you may not find the same information
           in the output ``DataPoint``. See :py:mod:`clinicadl.transforms.extraction` for more details.
-        - The size of the ``CapsDataset`` depends on the type of data you are working on. For example, if you have 10 images with
+        - The size of the ``BidsLikeDataset`` depends on the type of data you are working on. For example, if you have 10 images with
           100 slices each, and you want to work on slices, the length of your dataset will be :math:`10\\times100=1,000`.
         - To avoid confusion, we will use the term "sample" to refer to the actual element of the images we are working on
           (patch, slice or the whole image).
 
-    Finally, a ``CapsDataset`` works with tensors, so, before manipulating data, NIfTI files must be converted to PyTorch
-    ``.pt`` format with :py:func:`~CapsDataset.to_tensors`. If conversion was already performed,
-    :py:func:`~CapsDataset.read_tensor_conversion` must be called.
+    Finally, a ``BidsLikeDataset`` works with tensors, so, before manipulating data, NIfTI files must be converted to PyTorch
+    ``.pt`` format with :py:func:`~BidsLikeDataset.to_tensors`. If conversion was already performed,
+    :py:func:`~BidsLikeDataset.read_tensor_conversion` must be called.
 
 
     Parameters
@@ -74,7 +74,7 @@ class CapsDataset(TensorDataset):
         A :py:class:`pandas.DataFrame` (or a path to a ``TSV`` file containing the dataframe) with the list of (participant, session)
         pairs to consider, as well as any other relevant information (e.g. the labels for classification or
         regression).\n
-        Only (participant, session) pairs in this TSV file will be in the ``CapsDataset``.\n
+        Only (participant, session) pairs in this TSV file will be in the ``BidsLikeDataset``.\n
         If ``None``, all (participant, session) pairs in ``caps_directory`` will be used. Besides, a TSV file
         will be created in ``caps_directory``, with the list of all (participant, session)
         pairs in the directory that have the wanted ``preprocessing``. The name of the created TSV depends on the preprocessing,
@@ -101,7 +101,7 @@ class CapsDataset(TensorDataset):
         See :py:class:`clinicadl.transforms.TransformsHandler`.
     columns : Optional[Union[Sequence[str], dict[str, Optional[Callable[[pd.Series], pd.Series]]]]], default=None
         Columns to get in the DataFrame ``data``, and to put in the :py:class:`~clinicadl.data.structures.DataPoint` returned
-        by the ``CapsDataset``.\n
+        by the ``BidsLikeDataset``.\n
         It is passed via:
 
         - a list of strings (e.g. ``["age", "sex"]``), corresponding to the names of the columns;
@@ -114,7 +114,7 @@ class CapsDataset(TensorDataset):
             string labels to integer labels for classification.
 
     masks : Optional[Sequence[Union[str, PathType]]], default=None
-        Masks to load and to put in the :py:class:`~clinicadl.data.structures.DataPoint` returned by the ``CapsDataset``.\n
+        Masks to load and to put in the :py:class:`~clinicadl.data.structures.DataPoint` returned by the ``BidsLikeDataset``.\n
         A mask can be either a suffix (image-specific masks), or a file in the "masks" folder of
         ``caps_directory`` (common masks).\n
         For example, if ``masks=["brain", "leftHippocampus.nii.gz"]``:
@@ -123,7 +123,7 @@ class CapsDataset(TensorDataset):
           If the image is in ``sub-001/ses-M000/t1_linear/sub-001_ses-M000_T1w.nii.gz``, it will look for the mask in
           ``sub-001/ses-M000/t1_linear/sub-001_ses-M000_brain.nii.gz``.\n
         * For ``"leftHippocampus.nii.gz"``, a path is passed. Therefore, it is understood as a mask common
-          to all images. So, ``CapsDataset`` will simply get the mask in ``{caps_directory}/masks/leftHippocampus.nii.gz``.
+          to all images. So, ``BidsLikeDataset`` will simply get the mask in ``{caps_directory}/masks/leftHippocampus.nii.gz``.
 
         .. note::
             The name of the mask in the ``DataPoint`` is inferred:
@@ -207,7 +207,7 @@ class CapsDataset(TensorDataset):
 
     .. code-block:: python
 
-        dataset = datasets.CapsDataset(
+        dataset = datasets.BidsLikeDataset(
             caps_directory="mycaps",
             preprocessing=datatypes.PETLinear(
                 tracer="18FAV45", use_uncropped_image=True, suvr_reference_region="pons2"
@@ -239,7 +239,7 @@ class CapsDataset(TensorDataset):
 
     .. code-block:: python
 
-        dataset = datasets.CapsDataset(
+        dataset = datasets.BidsLikeDataset(
             caps_directory="mycaps",
             preprocessing=datatypes.PETLinear(
                 tracer="18FAV45", use_uncropped_image=True, suvr_reference_region="pons2"
@@ -266,7 +266,7 @@ class CapsDataset(TensorDataset):
     :py:class:`~clinicadl.data.datasets.UnpairedDataset`
     """
 
-    _config_type = CapsDatasetConfig
+    _config_type = BidsLikeDatasetConfig
 
     def __init__(
         self,

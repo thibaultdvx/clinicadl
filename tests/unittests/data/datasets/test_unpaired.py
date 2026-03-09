@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 import pytest
 
-from clinicadl.data.datasets import CapsDataset, UnpairedDataset
+from clinicadl.data.datasets import BidsLikeDataset, UnpairedDataset
 from clinicadl.data.datatypes import PETLinear, T1Linear
 from clinicadl.transforms import TransformsHandler
 from clinicadl.transforms.extraction import Slice
@@ -39,13 +39,13 @@ def create_caps_datasets():
     t1_data = t1_data.drop(columns=["diagnosis", "category"])
     pet_data = pet_data.drop(columns="category")
 
-    caps_t1 = CapsDataset(
+    caps_t1 = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=t1_data,
         transforms=TransformsHandler(extraction=Slice(slices=[0, 1])),
     )
-    caps_pet = CapsDataset(
+    caps_pet = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"

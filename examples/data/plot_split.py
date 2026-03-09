@@ -91,7 +91,7 @@ pd.read_csv(split_dir / "2_fold" / "split-0" / "validation.tsv", sep="\t").head(
 # ---------------
 #
 # Now that we have built our train, validation, and test groups, we will use these splits
-# to split a :py:class:`~clinicadl.data.datasets.CapsDataset`.
+# to split a :py:class:`~clinicadl.data.datasets.BidsLikeDataset`.
 
 # %%
 # It is straightforward to get a test and a training dataset:
@@ -102,13 +102,13 @@ preprocessing = datatypes.PETLinear(
     tracer="18FAV45", suvr_reference_region="pons2", use_uncropped_image=True
 )
 
-train_set = datasets.CapsDataset(
+train_set = datasets.BidsLikeDataset(
     caps_path, preprocessing=preprocessing, data=split_dir / "train.tsv"
 )
 train_set.df
 
 # %%
-test_set = datasets.CapsDataset(
+test_set = datasets.BidsLikeDataset(
     caps_path, preprocessing=preprocessing, data=split_dir / "test_baseline.tsv"
 )
 test_set.df
@@ -120,7 +120,7 @@ test_set.df
 splitter = split.KFold(kfold_dir)
 
 # %%
-# ``KFold`` reads the split directory. We can then split any ``CapsDataset``, using
+# ``KFold`` reads the split directory. We can then split any ``BidsLikeDataset``, using
 # :py:class:`KFold.get_splits <clinicadl.split.KFold.get_splits>`. This method is a generator
 # that enables to iterate over the splits of the K-Fold.
 

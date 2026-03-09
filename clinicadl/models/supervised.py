@@ -104,6 +104,7 @@ class SupervisedModel(HasConfig[SupervisedModelConfig], Model):
         loss: LossOrConfig,
         optimizer: OptimizerConfig,
         inferer: Inferer = SimpleInferer(),
+        label: str = "label",
     ):
         super().__init__()
         self.config = self._config_type(
@@ -113,6 +114,7 @@ class SupervisedModel(HasConfig[SupervisedModelConfig], Model):
         self.loss = self.config.loss.get_object()
         self.optimizer = self.config.optimizer.get_object(network=self.network)
         self.inferer = self.config.inferer
+        self.label = label
 
     def forward_step(self, batch: Batch) -> torch.Tensor:
         """
@@ -129,7 +131,9 @@ class SupervisedModel(HasConfig[SupervisedModelConfig], Model):
             The computed loss, as a **1-item** :py:class:`torch.Tensor`.
         """
         images = batch.get_field(IMAGE, dtype=torch.float32)
-        labels = batch.get_field(LABEL, ensure_channel_dim=True, dtype=torch.float32)
+        labels = batch.get_field(
+            self.label, ensure_channel_dim=True, dtype=torch.float32
+        )
 
         outputs = self.network(images)
 

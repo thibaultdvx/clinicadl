@@ -103,7 +103,7 @@ class SingleSplit(Splitter):
             from clinicadl.data import datasets, datatypes
             from clinicadl.transforms import TransformsHandler, extraction
 
-            dataset = datasets.CapsDataset(
+            dataset = datasets.BidsLikeDataset(
                 "caps_dir",
                 data=df,
                 datatype=datatypes.PETLinear(
@@ -132,7 +132,7 @@ class SingleSplit(Splitter):
 
         .. code-block::
 
-            eval_dataset = datasets.CapsDataset(
+            eval_dataset = datasets.BidsLikeDataset(
                 "caps_dir",
                 data=df,
                 datatype=datatypes.PETLinear(

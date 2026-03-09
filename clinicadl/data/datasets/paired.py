@@ -133,13 +133,13 @@ class PairedDataset(CollectionDataset, MultiSamplesDataset):
 
     .. code-block:: python
 
-        from clinicadl.data.datasets import CapsDataset, PairedDataset
+        from clinicadl.data.datasets import BidsLikeDataset, PairedDataset
         from clinicadl.data.datatypes import PETLinear, T1Linear
 
-        caps_t1 = CapsDataset(
+        caps_t1 = BidsLikeDataset(
             "mycaps", datatype=T1Linear(use_uncropped_image=True), data=participants_sessions
         )
-        caps_pet = CapsDataset(
+        caps_pet = BidsLikeDataset(
             "mycaps",
             datatype=PETLinear(
                 use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"

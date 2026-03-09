@@ -218,11 +218,11 @@ class DataLoaderConfig(ClinicaDLConfig):
 
         .. code-block:: python
 
-            from clinicadl.data.datasets import CapsDataset, PairedDataset
+            from clinicadl.data.datasets import BidsLikeDataset, PairedDataset
             from clinicadl.data.datatypes import PETLinear
             from clinicadl.data.dataloader import DataLoaderConfig
 
-            caps_dataset = CapsDataset(
+            caps_dataset = BidsLikeDataset(
                 directory="mycaps",
                 datatype=PETLinear(
                     tracer="18FAV45", use_uncropped_image=True, suvr_reference_region="pons2"

@@ -1,12 +1,12 @@
 """
-Building a basic CapsDataset
+Building a basic BidsLikeDataset
 ============================
 
-This example shows how to build a :py:class:`~clinicadl.data.datasets.CapsDataset` to manipulate your data.
+This example shows how to build a :py:class:`~clinicadl.data.datasets.BidsLikeDataset` to manipulate your data.
 """
 
 # %%
-# Create a CapsDataset from a CAPS directory
+# Create a BidsLikeDataset from a CAPS directory
 # ------------------------------------------
 
 from pathlib import Path
@@ -16,7 +16,7 @@ from clinicadl.data import datasets, datatypes, utils
 current_dir = Path.cwd()
 caps_path = current_dir.parent / "resources" / "caps"
 data = caps_path / "data.tsv"
-caps = datasets.CapsDataset(
+caps = datasets.BidsLikeDataset(
     caps_path,
     data=data,
     datatype=datatypes.PETLinear(

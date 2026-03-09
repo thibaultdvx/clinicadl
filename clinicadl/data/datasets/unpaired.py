@@ -113,11 +113,11 @@ class UnpairedDataset(CollectionDataset):
 
     .. code-block:: python
 
-        from clinicadl.data.datasets import CapsDataset, UnpairedDataset
+        from clinicadl.data.datasets import BidsLikeDataset, UnpairedDataset
         from clinicadl.data.datatypes import PETLinear, T1Linear
 
-        caps_t1 = CapsDataset("caps_t1", datatype=T1Linear(use_uncropped_image=True))
-        caps_pet = CapsDataset(
+        caps_t1 = BidsLikeDataset("caps_t1", datatype=T1Linear(use_uncropped_image=True))
+        caps_pet = BidsLikeDataset(
             "caps_pet",
             datatype=PETLinear(
                 use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"

@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from clinicadl.data.datasets import CapsDataset, ConcatDataset, MultiSamplesDataset
+from clinicadl.data.datasets import BidsLikeDataset, ConcatDataset, MultiSamplesDataset
 from clinicadl.data.datatypes import PETLinear, T1Linear
 from clinicadl.transforms import TransformsHandler
 from clinicadl.transforms.extraction import Image, Slice
@@ -47,13 +47,13 @@ def create_caps_datasets(pet_all: bool = False):
     t1_data = t1_data.drop(columns=["diagnosis", "category"])
     pet_data = pet_data.drop(columns="category")
 
-    caps_t1 = CapsDataset(
+    caps_t1 = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=t1_data,
         transforms=TransformsHandler(extraction=Slice(squeeze=True)),
     )
-    caps_pet = CapsDataset(
+    caps_pet = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"
@@ -235,7 +235,7 @@ def test_subset():
 
 
 def test_df():
-    caps_t1 = CapsDataset(
+    caps_t1 = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=sub_data([("sub-000", "ses-M000")]).drop(
@@ -243,7 +243,7 @@ def test_df():
         ),
         transforms=TransformsHandler(extraction=Slice(squeeze=True)),
     )
-    caps_pet = CapsDataset(
+    caps_pet = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"

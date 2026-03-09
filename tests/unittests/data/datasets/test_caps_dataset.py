@@ -8,7 +8,7 @@ import torch
 import torchio as tio
 from pydantic import ValidationError
 
-from clinicadl.data.datasets import CapsDataset
+from clinicadl.data.datasets import BidsLikeDataset
 from clinicadl.data.datatypes.preprocessing import PETLinear, T1Linear
 from clinicadl.data.structures import DataPoint, Mask, Sample, Sample2D
 from clinicadl.transforms import TransformsHandler
@@ -70,7 +70,7 @@ def test_good_caps_dataset():
     masks = ["brain", "leftHippocampus.nii.gz"]
     columns = {"age": None, "diagnosis": encode_diagnosis}
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         preprocessing,
         transforms=transforms,
@@ -159,13 +159,13 @@ def test_checks(tmp_path):
     # check preprocessing
     preprocessing = PETLinear(tracer="18FAV45", suvr_reference_region="pons2")
     with pytest.raises(RuntimeError):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             preprocessing,
             data,
         )
     preprocessing.use_uncropped_image = True
-    CapsDataset(
+    BidsLikeDataset(
         CAPS_DIR,
         preprocessing,
         data,
@@ -175,26 +175,26 @@ def test_checks(tmp_path):
     data_path = tmp_path / "only_pets.tsv"
     data.to_csv(data_path, sep="\t", index=False)
     with pytest.raises(FileNotFoundError):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             preprocessing,
             CAPS_DIR / "abc.tsv",
         )
     with pytest.raises(ValidationError):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             preprocessing,
             data=[("sub-000", "ses-M000")],
         )
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         preprocessing,
         tmp_path / "only_pets.tsv",
     )
     assert (caps_dataset.df == data).all().all()
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=None,
@@ -209,7 +209,7 @@ def test_checks(tmp_path):
     with pytest.raises(
         ValidationError, match="Got 'category' for 'label', but there is no*"
     ):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -219,7 +219,7 @@ def test_checks(tmp_path):
         ValidationError,
         match="'category' was passed in 'label', but this column is not numeric!",
     ):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -230,7 +230,7 @@ def test_checks(tmp_path):
         ValidationError,
         match="You passed a list in 'label', and this list can only contain*",
     ):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -242,7 +242,7 @@ def test_checks(tmp_path):
         ValidationError,
         match="A segmentation mask must be specific to each image, but you passed*",
     ):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -250,12 +250,12 @@ def test_checks(tmp_path):
             masks=["leftHippocampus.nii.gz"],
         )
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR, datatype=T1Linear(use_uncropped_image=True), data=data, label=None
     )
     assert caps_dataset.label is None
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -264,7 +264,7 @@ def test_checks(tmp_path):
     )
     assert caps_dataset.label == "age"
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -275,7 +275,7 @@ def test_checks(tmp_path):
     assert caps_dataset.df["diagnosis"].iloc[0] == 0
     assert data["diagnosis"].iloc[0] == "CN"
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -289,14 +289,14 @@ def test_checks(tmp_path):
     with pytest.raises(
         ValidationError, match=r"You passed \['age'\] in 'columns', but 'data' is None."
     ):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=None,
             columns=["age"],
         )
     with pytest.raises(ValidationError, match="A column cannot be named*"):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -305,7 +305,7 @@ def test_checks(tmp_path):
     with pytest.raises(
         KeyError, match="'abc' was passed in 'columns', but there is no such column*"
     ):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -314,14 +314,14 @@ def test_checks(tmp_path):
 
     # masks
     with pytest.raises(ValidationError):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
             masks="leftHippocampus.nii.gz",
         )
     with pytest.raises(ValidationError, match="Mask cannot be named*"):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -331,7 +331,7 @@ def test_checks(tmp_path):
         ValidationError,
         match="Conflict: 'age' has been passed in 'columns' AND 'masks'!",
     ):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
@@ -339,13 +339,13 @@ def test_checks(tmp_path):
             columns=["age"],
         )
     with pytest.raises(ValidationError, match="Duplicated mask names in 'masks'*"):
-        CapsDataset(
+        BidsLikeDataset(
             CAPS_DIR,
             datatype=T1Linear(use_uncropped_image=True),
             data=data,
             masks=["leftHippocampus", "leftHippocampus.nii.gz"],
         )
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -360,11 +360,11 @@ def test_checks(tmp_path):
     )
 
     # load also
-    caps_dataset = CapsDataset(CAPS_DIR, preprocessing, data, columns=["age"])
+    caps_dataset = BidsLikeDataset(CAPS_DIR, preprocessing, data, columns=["age"])
     with pytest.raises(ValueError, match="Cannot load the element 'age'*"):
         caps_dataset.read_tensor_conversion(load_also=["age"])
 
-    caps_dataset = CapsDataset(CAPS_DIR, preprocessing, data, masks=["brain"])
+    caps_dataset = BidsLikeDataset(CAPS_DIR, preprocessing, data, masks=["brain"])
     with pytest.raises(ValueError, match="Cannot load the element 'brain'*"):
         caps_dataset.read_tensor_conversion(load_also=["brain"])
 
@@ -376,7 +376,7 @@ def test_get_participant_session_couples():
             ("sub-000", "ses-M003"),
         ]
     )
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -400,14 +400,14 @@ def test_describe(tmp_path):
         ]
     )
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         tmp_path,
         T1Linear(use_uncropped_image=True),
         data=data,
     )
     assert caps_dataset.describe()["total_samples"] == 3
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         tmp_path,
         T1Linear(use_uncropped_image=True),
         data=data,
@@ -454,7 +454,7 @@ def test_get_sample_info():
             ("sub-010", "ses-M003"),
         ]
     )
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             tracer="18FAV45", suvr_reference_region="pons2", use_uncropped_image=True
@@ -469,7 +469,7 @@ def test_get_sample_info():
     with pytest.raises(IndexError, match="Index out of range, there are only*"):
         caps_dataset.get_sample_info(2, "age")
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -496,7 +496,7 @@ def test_train_eval():
             ("sub-010", "ses-M003"),
         ]
     )
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         T1Linear(use_uncropped_image=True),
         data=data,
@@ -525,7 +525,7 @@ def test_subset(tmp_path):
             ("sub-010", "ses-M003"),
         ]
     )
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         tmp_path,
         T1Linear(use_uncropped_image=True),
         transforms=TransformsHandler(extraction=Slice(slices=[0, 1])),
@@ -541,7 +541,7 @@ def test_subset(tmp_path):
             ),  # not in the dataset, this shouldn't raise an error
         ]
     )
-    assert isinstance(subset, CapsDataset)
+    assert isinstance(subset, BidsLikeDataset)
     assert len(subset) == 2
     assert subset[0].participant == "sub-010"
     assert subset[0].session == "ses-M003"
@@ -566,7 +566,7 @@ def test__getitem__(tmp_path):
             ("sub-010", "ses-M003"),
         ]
     )
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -655,7 +655,7 @@ def test__getitem__(tmp_path):
     assert torch.unique(out_sample["leftHippocampus"].tensor).tolist() == [0, 10]
 
     # check that image transform is not applied twice
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -675,7 +675,7 @@ def test__getitem__(tmp_path):
     assert len(caps_dataset.transforms.image_transforms.transforms) == 1
 
     # other label
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         transforms=TransformsHandler(extraction=Patch(patch_size=3)),
@@ -695,7 +695,7 @@ def test__getitem__(tmp_path):
     with pytest.raises(IndexError, match="Index out of range*"):
         caps_dataset[2]
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"
@@ -712,7 +712,7 @@ def test__getitem__(tmp_path):
 
     # additional info
     shutil.copytree(CAPS_DIR, tmp_path, dirs_exist_ok=True)
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         tmp_path,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -739,7 +739,7 @@ def test_from_json_to_json(tmp_path):
     data.to_csv(data_path, sep="\t", index=False)
 
     data.loc[0, "age"] = np.nan
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -757,7 +757,7 @@ def test_from_json_to_json(tmp_path):
         ),
     )
     caps_dataset.to_json(tmp_path / "dataset.json")
-    caps_dataset = CapsDataset.from_json(tmp_path / "dataset.json")
+    caps_dataset = BidsLikeDataset.from_json(tmp_path / "dataset.json")
     assert caps_dataset.label.name == "seg"
     assert len(caps_dataset.individual_masks) == 2
     assert len(caps_dataset.common_masks) == 1
@@ -777,7 +777,7 @@ def test_from_json_to_json(tmp_path):
     # read conversion before
     caps_dataset.read_tensor_conversion("t1_masks")
     caps_dataset.to_json(tmp_path / "dataset.json", overwrite=True)
-    caps_dataset = CapsDataset.from_json(tmp_path / "dataset.json")
+    caps_dataset = BidsLikeDataset.from_json(tmp_path / "dataset.json")
     assert caps_dataset._tensor_conversion.conversion_name == "t1_masks"
     assert caps_dataset._initial_shape == (1, 3, 3, 3)
     assert caps_dataset.converted
@@ -789,12 +789,12 @@ def test_from_json_to_json(tmp_path):
     # read conversion with transforms
     caps_dataset.read_tensor_conversion("t1_transform")
     caps_dataset.to_json(tmp_path / "dataset.json", overwrite=True)
-    caps_dataset = CapsDataset.from_json(tmp_path / "dataset.json")
+    caps_dataset = BidsLikeDataset.from_json(tmp_path / "dataset.json")
     assert len(caps_dataset.transforms.image_transforms.transforms) == 0
 
     # to tensors before
     shutil.copytree(CAPS_DIR, tmp_path, dirs_exist_ok=True)
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         tmp_path,
         datatype=T1Linear(use_uncropped_image=True),
         data=data,
@@ -813,7 +813,7 @@ def test_from_json_to_json(tmp_path):
     )
     caps_dataset.to_tensors(conversion_name="new_conversion", save_transforms=False)
     caps_dataset.to_json(tmp_path / "dataset.json", overwrite=True)
-    caps_dataset = CapsDataset.from_json(
+    caps_dataset = BidsLikeDataset.from_json(
         tmp_path / "dataset.json",
         transforms=TransformsHandler(
             extraction=Slice(squeeze=False),
@@ -830,7 +830,7 @@ def test_from_json_to_json(tmp_path):
     assert caps_dataset[1].session == "ses-M000"
     assert caps_dataset._tensor_conversion.conversion_name == "new_conversion"
 
-    caps_dataset = CapsDataset(
+    caps_dataset = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=data_path,
@@ -839,10 +839,10 @@ def test_from_json_to_json(tmp_path):
     caps_dataset.to_json(tmp_path / "dataset.json", overwrite=True)
     with pytest.raises(
         CannotReadJsonFieldError,
-        match=r"CapsDataset cannot read the field\(s\) \['columns'\] in .*",
+        match=r"BidsLikeDataset cannot read the field\(s\) \['columns'\] in .*",
     ):
-        CapsDataset.from_json(tmp_path / "dataset.json")
-    caps_dataset = CapsDataset.from_json(
+        BidsLikeDataset.from_json(tmp_path / "dataset.json")
+    caps_dataset = BidsLikeDataset.from_json(
         tmp_path / "dataset.json", columns={"age": None, "diagnosis": encode_diagnosis}
     )
     assert caps_dataset.df["diagnosis"].iloc[0] == 0

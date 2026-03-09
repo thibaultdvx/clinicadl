@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from clinicadl.data.datasets import (
-    CapsDataset,
+    BidsLikeDataset,
     ConcatDataset,
     PairedDataset,
 )
@@ -45,13 +45,13 @@ def create_caps_datasets(pet_all: bool = False):
     pet_data.loc[0, "diagnosis"] = np.nan
     pet_data = pet_data.drop(columns="category")
 
-    caps_t1 = CapsDataset(
+    caps_t1 = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=t1_data,
         transforms=TransformsHandler(extraction=Slice(slices=[0])),
     )
-    caps_pet = CapsDataset(
+    caps_pet = BidsLikeDataset(
         CAPS_DIR,
         datatype=PETLinear(
             use_uncropped_image=True, tracer="18FAV45", suvr_reference_region="pons2"
@@ -87,7 +87,7 @@ def test_checks():
         PairedDataset([caps_t1, caps_pet])
 
     _, caps_pet = create_caps_datasets()
-    caps_t1 = CapsDataset(
+    caps_t1 = BidsLikeDataset(
         CAPS_DIR,
         datatype=T1Linear(use_uncropped_image=True),
         data=deepcopy(caps_pet.df),

@@ -1,7 +1,7 @@
 Manipulating neuroimaging data
 ==============================
 
-``CapsDataset`` is the object that you will always use to
+``BidsLikeDataset`` is the object that you will always use to
 manipulate your neuroimaging data stored in a `CAPS <https://aramislab.paris.inria.fr/clinica/docs/public/latest/CAPS/Introduction/>`_
 structure.
 
@@ -9,16 +9,16 @@ As it inherits from PyTorch's :py:class:`Dataset <torch.utils.data.Dataset>`,
 it is an iterable, whose length can be accessed via ``len(dataset)``, and whose elements can be
 accessed with their indices: ``dataset[i]``.
 
-The additional features of ``CapsDataset`` are described in the documentation below, but there is
-a specificity the user should be aware of: **CapsDataset only manipulates PyTorch tensors**. So a
+The additional features of ``BidsLikeDataset`` are described in the documentation below, but there is
+a specificity the user should be aware of: **BidsLikeDataset only manipulates PyTorch tensors**. So a
 preliminary step is to **convert your NIfTI files to tensors**. The method ``to_tensors`` is here to
 help you:
 
 .. code-block:: python
 
-    >>> from clinicadl.data.datasets import CapsDataset
+    >>> from clinicadl.data.datasets import BidsLikeDataset
     >>> from clinicadl.data.datatypes import PETLinear
-    >>> dataset = CapsDataset(
+    >>> dataset = BidsLikeDataset(
             caps_directory="mycaps",
             preprocessing=PETLinear(
                 tracer="18FAV45", use_uncropped_image=True, suvr_reference_region="pons2"
@@ -59,16 +59,16 @@ here). Notice that masks common to all images (stored in ``masks``) have also be
 
 All the useful information (what contains the ``.pt`` files, which transforms have been applied, etc.) on the tensor conversion
 is stored in ``tensor_conversion/pet_conversion.json``. This file will be particularly useful if you don't want to make the conversion
-again the next time you will instantiate your ``CapsDataset``. In this case, use the ``read_tensor_conversion`` method:
+again the next time you will instantiate your ``BidsLikeDataset``. In this case, use the ``read_tensor_conversion`` method:
 
 .. code-block:: python
 
     >>> dataset.read_tensor_conversion("pet_conversion")
 
 .. note::
-    ``CapsDataset`` will compare the content of ``tensor_conversion/pet_conversion.json`` with its current state to
+    ``BidsLikeDataset`` will compare the content of ``tensor_conversion/pet_conversion.json`` with its current state to
     be sure that data in ``.pt`` files are indeed the data you want to manipulate. For example, if you ran
-    the tensor conversion with certain transforms but the current ``CapsDataset`` has been created with different
+    the tensor conversion with certain transforms but the current ``BidsLikeDataset`` has been created with different
     transforms, this will raise an error.
 
 Datatypes

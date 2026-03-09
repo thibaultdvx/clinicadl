@@ -26,7 +26,7 @@ from monai.losses import DiceLoss
 
 from clinicadl.callbacks import Callback, ModelCheckpointCallback
 from clinicadl.data.dataloader import DataLoaderConfig
-from clinicadl.data.datasets import CapsDataset
+from clinicadl.data.datasets import BidsLikeDataset
 from clinicadl.data.datatypes import T1Linear
 from clinicadl.infer import SlicesToImageInferer
 from clinicadl.metrics.config import (
@@ -104,7 +104,7 @@ def _build_callbacks(gpu: bool) -> list[Callback]:
 
 
 def _setup(caps_dir: Path, metadata: Path, maps_path: Path, gpu: bool) -> None:
-    train_dataset = CapsDataset(
+    train_dataset = BidsLikeDataset(
         directory=caps_dir,
         datatype=T1Linear(use_uncropped_image=False),
         data=metadata,
@@ -130,7 +130,7 @@ def _setup(caps_dir: Path, metadata: Path, maps_path: Path, gpu: bool) -> None:
     )
     train_dataset.read_tensor_conversion()
 
-    eval_dataset = CapsDataset(
+    eval_dataset = BidsLikeDataset(
         directory=caps_dir,
         datatype=T1Linear(use_uncropped_image=False),
         data=metadata,

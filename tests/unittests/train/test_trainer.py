@@ -13,7 +13,7 @@ import torchio as tio
 
 from clinicadl.callbacks import Callback, CallbacksHandler
 from clinicadl.data.dataloader import Batch, CollateFn, DataLoaderConfig
-from clinicadl.data.datasets import CapsDataset
+from clinicadl.data.datasets import BidsLikeDataset
 from clinicadl.data.datatypes import PETLinear
 from clinicadl.io import Maps
 from clinicadl.metrics import MetricsHandler
@@ -411,7 +411,7 @@ class TestSideMethods:
     def test_get_split(self, trainer: Trainer, tmp_path):
         maps = _add_maps_to_trainer(trainer, tmp_path)
 
-        caps = CapsDataset(
+        caps = BidsLikeDataset(
             directory=CAPS_PATH,
             datatype=PETLinear(
                 tracer="18FAV45",
@@ -460,7 +460,7 @@ class TestSideMethods:
         ):
             trainer._get_split(split_idx=0)
 
-        caps = CapsDataset(
+        caps = BidsLikeDataset(
             directory=CAPS_PATH,
             datatype=PETLinear(
                 tracer="18FAV45",
@@ -522,7 +522,7 @@ class TestSideMethods:
     def test_get_dataloader(self, trainer: Trainer, tmp_path):
         maps = _add_maps_to_trainer(trainer, tmp_path)
 
-        caps = CapsDataset(
+        caps = BidsLikeDataset(
             directory=CAPS_PATH,
             datatype=PETLinear(
                 tracer="18FAV45",
@@ -539,7 +539,7 @@ class TestSideMethods:
             maps.training.data.train.splits[0].dataloader_json, overwrite=True
         )
         dataloader = trainer._get_dataloader(maps.training.data.train.splits[0])
-        assert isinstance(dataloader.dataset, CapsDataset)
+        assert isinstance(dataloader.dataset, BidsLikeDataset)
         assert dataloader.batch_size == 2
 
         DataLoaderConfig(collate_fn=CustomCollate()).to_json(
@@ -552,7 +552,7 @@ class TestSideMethods:
         ):
             trainer._get_dataloader(maps.training.data.train.splits[0])
 
-        caps = CapsDataset(
+        caps = BidsLikeDataset(
             directory=CAPS_PATH,
             datatype=PETLinear(
                 tracer="18FAV45",

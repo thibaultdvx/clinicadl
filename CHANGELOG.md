@@ -62,7 +62,7 @@ This is the first release candidate for version 2.0.0, with the final release pl
 
 - `Trainer`: high-level training controller managing full model lifecycle.
 - `ClinicaDLModel`: flexible base class to define and extend custom architectures.
-- `CapsDataset`: redesigned dataset class in the new `dataset` module, tailored for CAPS/MAPS.
+- `BidsLikeDataset`: redesigned dataset class in the new `dataset` module, tailored for CAPS/MAPS.
 - `Splitter`: new module for managing train/val/test split logic.
 - `Maps`: a structured and reproducible representation of model outputs and metadata.
 

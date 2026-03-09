@@ -2,7 +2,7 @@
 with your neuroimaging data."""
 
 from .abstract import Dataset
-from .caps import CapsDataset
+from .caps import BidsLikeDataset
 from .concat import ConcatDataset
 from .multi_samples import MultiSamplesDataset
 from .paired import PairedDataset
