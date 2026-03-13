@@ -1,7 +1,9 @@
 PACKAGES := clinicadl tests
+PIP ?= pip
 POETRY ?= poetry
 CONDA ?= conda
 CONDA_ENV ?= "./env"
+DATA_CI := "/Users/thibault.devarax/Desktop/code/clinicadl_data_ci/data_ci"
 
 .PHONY: help
 help: Makefile
@@ -34,9 +36,13 @@ doc: clean.doc env.doc
 .PHONY: env
 env: env.dev
 
-.PHONY: env.conda
-env.conda:
-	@$(CONDA) env create -p $(CONDA_ENV) -k
+.PHONY: env.conda.create
+env.conda.create:
+	@$(CONDA) env create -p $(CONDA_ENV)/$(ENV_NAME) -k
+
+.PHONY: env.conda.clean
+env.conda.clean:
+	@rm -rf $(CONDA_ENV)
 
 .PHONY: env.dev
 env.dev:
@@ -83,6 +89,10 @@ install.dev: check.lock
 install.doc: check.lock
 	@$(POETRY) install --only docs
 
+.PHONY: install.functional-tests
+install.functional-tests: env.conda.create
+	@$(CONDA) run -p $(CONDA_ENV)/$(ENV_NAME) pip install -r $(REQ_FILE)
+
 ## tests
 .PHONY: unit-tests
 unit-tests: install
@@ -98,8 +108,19 @@ multi-gpu-unit-tests: install
 
 .PHONY: functional-tests
 functional-tests: install
-	@$(POETRY) run python -m pytest -v -m "not gpu and not multi_gpu" --ref /localdrive10TB/users/ci-clinicadl/clinicadl_data_ci/data_ci tests/functional
+	@$(POETRY) run python -m pytest -v -m "not gpu and not multi_gpu" --ref /localdrive10TB/users/clinicadl.ci/clinicadl_data_ci/data_ci tests/functional
 
 .PHONY: gpu-functional-tests
 gpu-functional-tests: install
-	@$(POETRY) run python -m pytest -v -m "gpu" --ref /localdrive10TB/users/ci-clinicadl/clinicadl_data_ci/data_ci tests/functional
+	@$(POETRY) run python -m pytest -v -m "gpu" --ref /localdrive10TB/users/clinicadl.ci/clinicadl_data_ci/data_ci tests/functional
+
+.PHONY: which-python
+which-python: install.functional-tests
+which-python:
+	@$(CONDA) run -p $(CONDA_ENV)/$(ENV_NAME) which clinicadl
+
+.PHONY: functional-test-segmentation
+functional-test-segmentation: ENV_NAME := classification
+functional-test-segmentation: REQ_FILE := $(DATA_CI)/maps_test_segmentation/environment.txt
+functional-test-segmentation: which-python
+	@$(CONDA) run -p $(CONDA_ENV)/$(ENV_NAME) python -m pytest -v -m "not gpu" --ref $(DATA_CI) tests/functional/test_segmentation.py

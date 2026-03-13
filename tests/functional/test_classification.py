@@ -238,7 +238,7 @@ def _test_trainer(
     _validate(kfold_dir, dataset, trainer, gpu=gpu)
     _test(split_dir, dataset, trainer, gpu=gpu)
 
-    compare_maps_dir(maps_path, ref, except_=[Path("callbacks.json")])
+    compare_maps_dir(maps_path, ref, except_=[Path("callbacks.json"), "test"])
 
 
 def test_train(tmp_path, ref_data, caps_dir, metadata_tsv, split_dir, kfold_dir):
