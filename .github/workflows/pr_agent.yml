@@ -25,7 +25,7 @@ jobs:
           KEY: ${{ secrets.OPENAI_KEY }}
           LLM_API: ${{ secrets.LLM_API }}
         run: |
-          curl -s --max-time 30 "$LLM_API/chat/completions" \
+          curl -k --max-time 30 "$LLM_API/chat/completions" \
             -H "Authorization: Bearer $KEY" \
             -H "Content-Type: application/json" \
             -d '{"model":"openai/gpt-5.4-mini","messages":[{"role":"user","content":"Test"}]}'
