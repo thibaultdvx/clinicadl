@@ -9,11 +9,6 @@ jobs:
     - name: PR Agent action step
       uses: the-pr-agent/pr-agent@main
       env:
-        OPENAI_API_BASE: ${{ secrets.LLM_API }}
+        OPENAI.API_BASE: ${{ secrets.LLM_API }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
-
-        # Fix 2: Add Mistral-specific key for mistral/* models
-        MISTRAL_API_KEY: ${{ secrets.OPENAI_KEY }}
-        MISTRAL_API_BASE: ${{ secrets.LLM_API }}
-
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
