@@ -23,6 +23,7 @@ jobs:
           GITHUB__USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI__KEY: ${{ secrets.OPENAI_KEY }}
           OPENAI__API_BASE: ${{ secrets.LLM_API }}
+          SSL_VERIFY: "false"
         run: |
           "$RUNNER_TEMP/pr-agent-venv/bin/python" -m pr_agent.cli \
             --pr_url "$PR_URL" review
