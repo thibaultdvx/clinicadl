@@ -2,7 +2,8 @@ name: Debug LLM API
 on: [workflow_dispatch, pull_request]
 jobs:
   debug:
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
     steps:
       - name: Inspect LLM_API secret
         env:
