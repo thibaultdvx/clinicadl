@@ -1,14 +1,30 @@
-name: PR Agent
-on:
-  pull_request:
-    types: [opened, synchronize]
+name: Debug LLM API
+on: [workflow_dispatch, pull_request]
 jobs:
-  pr_agent_job:
+  debug:
     runs-on: ubuntu-latest
     steps:
-    - name: PR Agent action step
-      uses: the-pr-agent/pr-agent@main
-      env:
-        OPENAI.API_BASE: ${{ secrets.LLM_API }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Inspect LLM_API secret
+        env:
+          LLM_API: ${{ secrets.LLM_API }}
+        run: |
+          # Secrets are masked in logs, so show its structure instead
+          echo "Length: ${#LLM_API}"
+          echo "$LLM_API" | sed -E 's#(https?://)([^/]+)(.*)#scheme=\1 host_first_chars=\2 path=\3#' | cut -c1-30
+          echo "$LLM_API" | grep -q '/v1$' && echo "Ends with /v1: OK" || echo "WARNING: does not end with /v1"
+          echo "$LLM_API" | grep -q '[[:space:]]' && echo "WARNING: contains whitespace/newline" || echo "No whitespace: OK"
+
+      - name: DNS and connectivity
+        run: |
+          nslookup llmapi.icm-institute.org || echo "DNS FAILED"
+          curl -sv --max-time 15 https://llmapi.icm-institute.org/v1/models -o /dev/null 2>&1 | tail -20
+
+      - name: Authenticated request
+        env:
+          KEY: ${{ secrets.OPENAI_KEY }}
+          LLM_API: ${{ secrets.LLM_API }}
+        run: |
+          curl -s --max-time 30 "$LLM_API/chat/completions" \
+            -H "Authorization: Bearer $KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"model":"openai/gpt-5.4-mini","messages":[{"role":"user","content":"Test"}]}'
