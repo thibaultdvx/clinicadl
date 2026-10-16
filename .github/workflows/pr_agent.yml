@@ -11,4 +11,4 @@ jobs:
       env:
         OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        OPENAI_API_BASE: ${{ secrets.LLM_API }}
+        OPENAI.API_BASE: ${{ secrets.LLM_API }}
