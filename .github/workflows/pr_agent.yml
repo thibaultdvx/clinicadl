@@ -39,8 +39,6 @@ jobs:
           COMMAND: ${{ github.event.comment.body }}
           GITHUB__USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI__KEY: ${{ secrets.OPENAI_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.OPENAI_KEY }}
-          MISTRAL_API_KEY: ${{ secrets.OPENAI_KEY }}
           OPENAI__API_BASE: ${{ secrets.LLM_API }}
           SSL_VERIFY: "false"
         run: |
