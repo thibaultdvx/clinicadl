@@ -44,5 +44,26 @@ jobs:
           OPENAI__API_BASE: ${{ secrets.LLM_API }}
           SSL_VERIFY: "false"
         run: |
-          "$VENV/bin/python" -m pr_agent.cli \
-            --pr_url "$PR_URL" "${COMMAND#/}"
+          "$VENV/bin/python" - <<'PY'
+          import os
+          import shlex
+          import subprocess
+          import sys
+
+          tokens = shlex.split(os.environ["COMMAND"])
+
+          allowed = {"review", "improve", "describe"}
+          if not tokens or tokens[0] not in {
+              "/" + cmd for cmd in allowed
+          }:
+              sys.exit("Unsupported PR-Agent command")
+
+          command = tokens[0][1:]
+
+          subprocess.run([
+              sys.executable, "-m", "pr_agent.cli",
+              "--pr_url", os.environ["PR_URL"],
+              command,
+              *tokens[1:],
+          ], check=True)
+          PY
