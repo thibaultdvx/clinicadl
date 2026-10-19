@@ -1,0 +1,26 @@
+name: PR Agent
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr_agent_job:
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.body == '/try' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: self-hosted
+    steps:
+      - name: Try to connect to API
+        env:
+          GITHUB__USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI__KEY: ${{ secrets.OPENAI_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.OPENAI_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.OPENAI_KEY }}
+          OPENAI__API_BASE: ${{ secrets.LLM_API }}
+        run: |
+          curl -k "$OPENAI__API_BASE/chat/completions" -H "Authorization: Bearer $OPENAI_KEY" -H "Content-Type: application/json" -d "{\"model\": \"anthropic/claude-sonnet-4-5\", \"messages\": [{\"role\": \"user\", \"content\": \"Bonjour !\"}]}"
